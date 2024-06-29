@@ -1,6 +1,6 @@
 import datetime
-import DateUtil
-import RequestUtil
+from Utils import RequestUtil, TimeUtil
+from Data.Candle import Candle
 
 
 class SPYData:
@@ -19,22 +19,16 @@ class SPYData:
             'timeout': 60
         })['Candle']['SPY{=d}']
         for candle in candle_list:
-            date = DateUtil.unix_to_date(candle['time'])
-            spyc = SPYCandle(candle)
+            date = TimeUtil.unix_to_date(candle['time'])
+            spyc = Candle(candle)
             self.data[date] = spyc
 
     def __init__(self, days: int):
-        self.data: dict[datetime.date, SPYCandle] = {}
+        self.data: dict[datetime.date, Candle] = {}
         self.get_data(days)
 
     def get_market_days(self) -> list[datetime.date]:
         return list(self.data.keys())
 
-
-class SPYCandle:
-
-    def __init__(self, json: dict):
-        self.open = json['open']
-        self.high = json['high']
-        self.low = json['low']
-        self.close = json['close']
+    def get_open_price(self, day: datetime.date) -> float:
+        return self.data[day].open
