@@ -21,16 +21,18 @@ class OptionData:
 
     def load_data(self, option_type: OptionType, strike: int):
         full_symbol = f'{self.symbol}{option_type.value}{strike}{{=5m}}'
-        candle_list = RequestUtil.request({
+        response = RequestUtil.request({
             'events': 'Candle',
             'symbols': full_symbol,
             'fromTime': self.from_time,
             'timeout': 60
-        })['Candle'][full_symbol]
+        })
         self.candle_data[option_type][strike] = {}
-        for candle in candle_list:
-            candle_time = TimeUtil.unix_to_time(candle['time'])
-            self.candle_data[option_type][strike][candle_time] = Candle(candle)
+        if 'Candle' in response:
+            candle_list = response['Candle'][full_symbol]
+            for candle in candle_list:
+                candle_time = TimeUtil.unix_to_time(candle['time'])
+                self.candle_data[option_type][strike][candle_time] = Candle(candle)
 
     def get_price(self, option_type: OptionType, strike: int, query_time: time) -> Optional[float]:
         if strike not in self.candle_data[option_type]:
