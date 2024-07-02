@@ -16,7 +16,7 @@ def test_long_call_strategy():
 
     # strategies = [LongCallStrategy(0.8, 500, 100)]
 
-    bte = BacktestEngine(5, strategies)
+    bte = BacktestEngine(90, strategies)
     bte.run()
 
     targ = []
@@ -56,7 +56,7 @@ def test_long_call_strategy():
     # Create the figure with two subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10), sharex=False)
 
-    fig.suptitle('Long 0DTE SPY Condor - Buy at Open - Close at target or EOD - 90 Day Backtest')
+    fig.suptitle('Long 0DTE SPY Call - Buy at Open - Close at target or EOD - 90 Day Backtest')
 
     # PNL Plot
     pnl_cmap = create_pnl_colormap()

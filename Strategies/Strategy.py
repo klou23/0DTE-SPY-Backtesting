@@ -33,6 +33,7 @@ class Strategy(ABC):
         self.option_data = option_data
         self.positions = []
         self.pnl = 0
+        self.net_cost = 0
         self.daily_params = daily_params
 
     def compute_curr_pnl_pct(self, curr_time: time) -> Optional[float]:
@@ -53,11 +54,26 @@ class Strategy(ABC):
         pos = self.positions[idx]
         price = self.option_data.get_price(pos.option_type, pos.strike, curr_time)
         if price is None:
-            print("Not enough liquidity to close leg, should check liquidity before closing")
+            # Not enough liquidity to close
             return
         self.pnl += (pos.position * price * 100) - (pos.position * pos.price * 100)
         self.net_cost += pos.position * pos.price * 100
         self.positions.pop(idx)
+
+    def close_all(self, curr_time: time):
+        left = []
+
+        for pos in self.positions:
+            price = self.option_data.get_price(pos.option_type, pos.strike, curr_time)
+            if price is None:
+                # Not enough liquidity to close
+                left.append(pos)
+                continue
+            self.pnl += (pos.position * price * 100) - (pos.position * pos.price * 100)
+            self.net_cost += pos.position * pos.price * 100
+            self.pnl -= 0.13    # Fees
+
+        self.positions = left
 
     @abstractmethod
     def run_strategy(self, curr_time: time):

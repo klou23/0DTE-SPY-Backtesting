@@ -13,7 +13,9 @@ class BacktestEngine:
             print(f"Simulating: {market_day}")
             option_data = OptionData(market_day, self.spy_data.get_close_price(market_day))
             for strategy in self.strategies:
-                strategy.reset(option_data, self.spy_data.get_open_price(market_day))
+                strategy.day_reset(option_data, {
+                    'spy_open': self.spy_data.get_open_price(market_day)
+                })
 
             start_time = time(9, 30)
             end_time = time(16, 00)
@@ -25,3 +27,8 @@ class BacktestEngine:
                 for strategy in self.strategies:
                     strategy.run_strategy(curr_datetime.time())
                 curr_datetime += timedelta(minutes=5)
+
+        for strategy in self.strategies:
+            strategy.day_reset(None, {
+                'spy_open': 0
+            })

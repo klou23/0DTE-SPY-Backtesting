@@ -51,8 +51,9 @@ class LongCallStrategy:
             if price is None:
                 return None
             curr_val += price * pos.position * 100
+            curr_val -= 0.13        # Fees
             initial_net_cost += pos.price * pos.position * 100
-        pnl_pct = ((curr_val-initial_net_cost)/abs(initial_net_cost))*100
+        pnl_pct = ((curr_val-initial_net_cost + self.pnl)/abs(initial_net_cost))*100
         return pnl_pct
 
     def close_strategy(self, curr_time: time):
