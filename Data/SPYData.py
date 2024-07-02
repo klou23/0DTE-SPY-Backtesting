@@ -32,3 +32,6 @@ class SPYData:
 
     def get_open_price(self, day: datetime.date) -> float:
         return self.data[day].open
+
+    def get_close_price(self, day: datetime.date) -> float:
+        return self.data[day].close

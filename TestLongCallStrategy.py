@@ -2,6 +2,7 @@ from matplotlib import colors
 from matplotlib.colors import LinearSegmentedColormap
 
 from BacktestEngine import BacktestEngine
+from Strategies.Condor import Condor
 from Strategies.LongCallStrategy import LongCallStrategy
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,11 +10,13 @@ import numpy as np
 
 def test_long_call_strategy():
     strategies = []
-    for pct_otm in range(-1600, 1601, 25):
-        for profit_target_pct in range(5, 501, 3):
-            strategies.append(LongCallStrategy(pct_otm / 1000, profit_target_pct, 100))
+    for pct_otm in range(-100, 100, 2):
+        for profit_target_pct in range(5, 401, 5):
+            strategies.append(LongCallStrategy(pct_otm / 100, profit_target_pct, 100))
 
-    bte = BacktestEngine(90, strategies)
+    # strategies = [LongCallStrategy(0.8, 500, 100)]
+
+    bte = BacktestEngine(5, strategies)
     bte.run()
 
     targ = []
@@ -24,6 +27,8 @@ def test_long_call_strategy():
         targ.append(strategy.profit_target_pct)
         otm.append(strategy.pct_otm)
         pnl.append(sum(strategy.historicalPnl))
+        if sum(strategy.historicalPnl) > 1000:
+            print(strategy.pct_otm, strategy.profit_target_pct)
 
         win_cnt = sum(1 for value in strategy.historicalPnl if value > 0)
         win_pct.append(win_cnt/len(strategy.historicalPnl)*100)
@@ -51,7 +56,7 @@ def test_long_call_strategy():
     # Create the figure with two subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10), sharex=False)
 
-    fig.suptitle('Long 0DTE SPY Call - Buy at Open - Close at target or EOD - 90 Day Backtest')
+    fig.suptitle('Long 0DTE SPY Condor - Buy at Open - Close at target or EOD - 90 Day Backtest')
 
     # PNL Plot
     pnl_cmap = create_pnl_colormap()
